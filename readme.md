@@ -25,8 +25,8 @@ alerts.py - A dedicated mail handling script that triggers HTML emergency dispat
 # Local Setup and Database Configuration
 Run the following script in your PostgreSQL query tool to initialize the core tracking table and its optimization index:
 
-SQL
-CREATE TABLE telemetry (
+ SQL
+ CREATE TABLE telemetry (
     id SERIAL PRIMARY KEY,
     machine_id VARCHAR(50),
     temperature NUMERIC(5, 2),
