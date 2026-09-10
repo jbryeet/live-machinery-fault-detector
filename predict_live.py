@@ -6,11 +6,7 @@ from datetime import datetime
 from alerts import send_critical_email
 
 print("🐕 Live AI Watchdog v2 initialized. Computing probability matrices...")
-
-# 1. Load saved human-coded AI brain
 ai_brain = joblib.load('trained_machinery_model.pkl')
-
-# 2. Connect to local PostgreSQL database
 db_connection_string = "postgresql://postgres:iapetus@localhost:5432/predictive_maintenance"
 db_engine = create_engine(db_connection_string)
 
@@ -18,24 +14,17 @@ last_checked_id = 0
 
 while True:
     try:
-        # Fetch the absolute latest telemetry row recorded by the Node.js server
         query = "SELECT id, temperature, vibration, rotational_speed, timestamp FROM telemetry ORDER BY id DESC LIMIT 1;"
         latest_row = pd.read_sql(query, db_engine)
         
         if not latest_row.empty:
             current_id = latest_row['id'].iloc[0]
-            
-            # Only run the AI if this is a brand new row we haven't seen yet
             if current_id != last_checked_id:
                 last_checked_id = current_id
-                
-                # Extract the sensor features
                 temp = latest_row['temperature'].iloc[0]
                 vib = latest_row['vibration'].iloc[0]
                 speed = latest_row['rotational_speed'].iloc[0]
                 db_time = latest_row['timestamp'].iloc[0]
-                
-                # Human Data Cleaning: Handle the occasional None/Null value
                 if pd.isna(vib):
                     vib = 45.0  # Safe fallback baseline for missing values
                 
